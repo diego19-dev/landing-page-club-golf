@@ -1,47 +1,38 @@
-export default function Page() {
+'use client'
+
+import { useState } from 'react'
+import { CalendarDays, ChevronDown, MapPin, Menu, Minus, Plus, ShoppingBag, X } from 'lucide-react'
+
+const times = ['07:10', '07:40', '08:20', '09:00', '09:40', '10:20', '11:00', '11:40']
+const products = [
+  { name: 'Driver Apex Pro', category: 'Palos', price: '€489', image: 'https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=700&q=85' },
+  { name: 'Polo Club Heritage', category: 'Ropa', price: '€89', image: 'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?auto=format&fit=crop&w=700&q=85' },
+  { name: 'Guante Tour Premium', category: 'Accesorios', price: '€24', image: 'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?auto=format&fit=crop&w=700&q=85' },
+]
+const rules = [
+  ['Silencio durante el swing', 'Respeta la concentración de cada jugador. Mantén silencio y permanece quieto mientras alguien prepara y ejecuta su golpe.'],
+  ['Cuida los bunkers', 'Después de jugar, rastrilla tus huellas y devuelve la arena a su sitio. Deja el campo listo para el siguiente jugador.'],
+  ['Bola en el green', 'Marca la posición de tu bola antes de levantarla. Repara siempre las marcas de pitch y evita caminar sobre la línea de putt.'],
+]
+
+export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [date, setDate] = useState('2026-09-18')
+  const [selectedTime, setSelectedTime] = useState('08:20')
+  const [players, setPlayers] = useState(2)
+  const [cart, setCart] = useState(false)
+  const [cartCount, setCartCount] = useState(0)
+  const [openRule, setOpenRule] = useState(0)
+  const [booked, setBooked] = useState(false)
+
   return (
-    <main
-      style={{
-        colorScheme: 'light dark',
-        position: 'relative',
-        display: 'flex',
-        minHeight: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'light-dark(#fff, #000)',
-        color: 'light-dark(#000, #fff)',
-      }}
-    >
-      <svg
-        aria-hidden="true"
-        style={{ width: 80, height: 80 }}
-        width={80}
-        height={80}
-        fill="none"
-        viewBox="0 0 20 20"
-        xmlns="http://www.w3.org/2000/svg"
-        stroke="currentColor"
-        strokeWidth="0.5"
-      >
-        <path
-          d="M14.2 14.2H17V6.9375C17 4.76288 15.2371 3 13.0625 3H5.8V5.8M14.2 14.2V7.79063L7.79062 14.2H14.2ZM14.2 14.2V17H6.9375C4.76288 17 3 15.2371 3 13.0625V5.8H5.8M5.8 5.8V12.2313L12.2313 5.8H5.8Z"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <p
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: 'calc(50% + 56px)',
-          transform: 'translateX(-50%)',
-          whiteSpace: 'nowrap',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: 'light-dark(#71717a, #a1a1aa)',
-        }}
-      >
-        Your v0 generation will show here.
-      </p>
+    <main className="min-h-screen overflow-hidden bg-[#071b16] text-[#f5f2e9]">
+      <header className="absolute inset-x-0 top-0 z-30 border-b border-white/10 bg-[#071b16]/40 backdrop-blur-sm"><div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-10"><a href="#inicio" className="font-serif text-xl tracking-[.2em] text-[#efe9d8]">MONTEVERDE</a><nav className="hidden items-center gap-8 text-sm text-[#d9dfd6] md:flex"><a href="#reservas" className="transition hover:text-[#d6b875]">Reservas</a><a href="#tienda" className="transition hover:text-[#d6b875]">Pro Shop</a><a href="#etiqueta" className="transition hover:text-[#d6b875]">Etiqueta</a></nav><button aria-label="Abrir menú" onClick={() => setMenuOpen(!menuOpen)} className="rounded-full p-2 md:hidden">{menuOpen ? <X size={21} /> : <Menu size={21} />}</button></div>{menuOpen && <nav className="flex flex-col gap-4 border-t border-white/10 bg-[#071b16] px-5 py-5 text-sm md:hidden"><a href="#reservas" onClick={() => setMenuOpen(false)}>Reservas</a><a href="#tienda" onClick={() => setMenuOpen(false)}>Pro Shop</a><a href="#etiqueta" onClick={() => setMenuOpen(false)}>Etiqueta</a></nav>}</header>
+      <section id="inicio" className="relative flex min-h-[610px] items-end px-5 pb-14 pt-32 sm:min-h-[680px] lg:min-h-[780px] lg:px-10"><img src="/golf-hero.png" alt="Campo de golf Monteverde al amanecer" className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#071b16] via-[#071b16]/45 to-[#071b16]/20" /><div className="relative mx-auto w-full max-w-7xl"><p className="mb-4 text-xs font-medium uppercase tracking-[.28em] text-[#d6b875]">Club privado · Desde 1987</p><h1 className="max-w-3xl font-serif text-5xl leading-[.94] tracking-[-.035em] text-[#f5f2e9] sm:text-7xl">Juega a tu<br /><em className="text-[#d6b875]">manera.</em></h1><p className="mt-6 max-w-md text-base leading-relaxed text-[#d9dfd6]">Un campo diseñado para quedarse en la memoria. Tu próxima ronda comienza aquí.</p><a href="#reservas" className="mt-8 inline-flex items-center rounded-full bg-[#d6b875] px-6 py-3 text-sm font-semibold text-[#13251d] transition hover:bg-[#ead49a]">Reservar Tee Time <span className="ml-3">↗</span></a></div></section>
+      <section id="reservas" className="mx-auto max-w-7xl px-5 py-20 lg:px-10 lg:py-28"><div className="mb-10 flex items-end justify-between"><div><p className="eyebrow">01 · Tu ronda</p><h2 className="section-title">Reserva tu<br /><em>tee time.</em></h2></div><CalendarDays className="mb-2 text-[#d6b875]" size={28} /></div><div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]"><div className="rounded-2xl border border-white/10 bg-[#0c2820] p-5 sm:p-7"><label className="eyebrow mb-3 block">Selecciona una fecha</label><input type="date" value={date} onChange={e => setDate(e.target.value)} className="mb-8 w-full border-b border-white/20 bg-transparent pb-3 text-lg text-[#f5f2e9] outline-none" /><label className="eyebrow mb-4 block">Horarios disponibles</label><div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{times.map(time => <button key={time} onClick={() => setSelectedTime(time)} className={`rounded-lg border px-3 py-3 text-sm transition ${selectedTime === time ? 'border-[#d6b875] bg-[#d6b875] text-[#13251d]' : 'border-white/10 text-[#d9dfd6] hover:border-[#d6b875]'}`}>{time}</button>)}</div></div><div className="rounded-2xl bg-[#f5f2e9] p-5 text-[#13251d] sm:p-7"><p className="eyebrow text-[#64746a]">Confirmar reserva</p><div className="mt-5 space-y-4"><input aria-label="Nombre completo" placeholder="Nombre completo" className="field" /><div className="flex items-center justify-between border-b border-[#13251d]/20 pb-3"><span className="text-sm">Jugadores</span><div className="flex items-center gap-4"><button onClick={() => setPlayers(Math.max(1, players - 1))} aria-label="Menos jugadores"><Minus size={16} /></button><strong>{players}</strong><button onClick={() => setPlayers(Math.min(4, players + 1))} aria-label="Más jugadores"><Plus size={16} /></button></div></div><label className="flex items-center justify-between border-b border-[#13251d]/20 pb-3 text-sm"><span>Carrito de golf <span className="text-[#64746a]">(+€35)</span></span><input type="checkbox" checked={cart} onChange={e => setCart(e.target.checked)} className="accent-[#167052]" /></label><button onClick={() => setBooked(true)} className="mt-2 w-full rounded-full bg-[#167052] py-3.5 text-sm font-semibold text-white transition hover:bg-[#1c8966]">{booked ? 'Solicitud enviada' : `Solicitar · ${selectedTime}`}</button></div></div></div></section>
+      <section id="tienda" className="border-y border-white/10 bg-[#f5f2e9] px-5 py-20 text-[#13251d] lg:px-10 lg:py-28"><div className="mx-auto max-w-7xl"><div className="flex items-end justify-between"><div><p className="eyebrow text-[#64746a]">02 · La tienda</p><h2 className="section-title">Selección<br /><em>del club.</em></h2></div><div className="relative"><ShoppingBag size={22} /><span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#d6b875] text-[10px]">{cartCount}</span></div></div><div className="mt-10 grid gap-5 sm:grid-cols-3">{products.map(product => <article key={product.name} className="group"><div className="relative mb-4 aspect-[4/5] overflow-hidden rounded-2xl bg-[#dfe4dc]"><img src={product.image} alt={product.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /><span className="absolute left-3 top-3 rounded-full bg-[#f5f2e9]/90 px-3 py-1 text-[10px] uppercase tracking-widest">{product.category}</span></div><div className="flex items-start justify-between"><div><h3 className="font-serif text-xl">{product.name}</h3><p className="mt-1 text-sm text-[#64746a]">{product.price}</p></div><button onClick={() => setCartCount(cartCount + 1)} aria-label={`Añadir ${product.name}`} className="rounded-full border border-[#13251d]/20 p-2 transition hover:bg-[#13251d] hover:text-white"><Plus size={17} /></button></div></article>)}</div></div></section>
+      <section id="etiqueta" className="mx-auto max-w-7xl px-5 py-20 lg:px-10 lg:py-28"><div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]"><div><p className="eyebrow">03 · El espíritu</p><h2 className="section-title">Jugar bien<br /><em>es cuidar.</em></h2><p className="mt-6 max-w-sm text-sm leading-relaxed text-[#aab8af]">La elegancia del golf vive en los pequeños gestos. Conoce nuestras reglas de etiqueta.</p></div><div className="border-t border-white/15">{rules.map(([title, text], index) => <div key={title} className="border-b border-white/15"><button onClick={() => setOpenRule(openRule === index ? -1 : index)} className="flex w-full items-center justify-between py-5 text-left text-base"><span><span className="mr-4 text-xs text-[#d6b875]">0{index + 1}</span>{title}</span><ChevronDown size={18} className={`text-[#d6b875] transition ${openRule === index ? 'rotate-180' : ''}`} /></button>{openRule === index && <p className="max-w-xl pb-5 pl-9 text-sm leading-relaxed text-[#aab8af]">{text}</p>}</div>)}</div></div></section>
+      <footer className="border-t border-white/10 px-5 py-10 lg:px-10"><div className="mx-auto flex max-w-7xl flex-col gap-8 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-serif text-2xl tracking-[.16em]">MONTEVERDE</p><p className="mt-3 flex items-center gap-2 text-sm text-[#aab8af]"><MapPin size={14} /> Camino del Roble 18 · Madrid</p></div><div className="flex gap-4 text-xs uppercase tracking-widest text-[#aab8af]"><a href="#inicio" aria-label="Instagram">Instagram</a><a href="#inicio" aria-label="X">X</a></div><p className="text-xs text-[#64746a]">© 2026 Monteverde Golf Club</p></div></footer>
     </main>
   )
 }
