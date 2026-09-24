@@ -1,39 +1,196 @@
 'use client'
 
-import { useState } from 'react'
-import { CalendarDays, ChevronDown, Home as House, MapPin, Menu, Minus, Plus, ShoppingBag, Sprout, X } from 'lucide-react'
-
-const times = ['07:10', '07:40', '08:20', '09:00', '09:40', '10:20', '11:00', '11:40']
-const products = [
-  { name: 'Driver Apex Pro', category: 'Palos', price: '€489', image: 'https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=700&q=85' },
-  { name: 'Polo Club Heritage', category: 'Ropa', price: '€89', image: 'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?auto=format&fit=crop&w=700&q=85' },
-  { name: 'Guante Tour Premium', category: 'Accesorios', price: '€24', image: 'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?auto=format&fit=crop&w=700&q=85' },
-]
-const rules = [
-  ['Silencio durante el swing', 'Respeta la concentración de cada jugador. Mantén silencio y permanece quieto mientras alguien prepara y ejecuta su golpe.'],
-  ['Cuida los bunkers', 'Después de jugar, rastrilla tus huellas y devuelve la arena a su sitio. Deja el campo listo para el siguiente jugador.'],
-  ['Bola en el green', 'Marca la posición de tu bola antes de levantarla. Repara siempre las marcas de pitch y evita caminar sobre la línea de putt.'],
-]
+import { useState, useEffect } from 'react'
+import { SectionId, UserRole } from '@/types'
+import { useAuth } from '@/lib/auth-context'
+import { Header } from '@/components/layout/Header'
+import { Footer } from '@/components/layout/Footer'
+import { HeroSection } from '@/components/sections/HeroSection'
+import { ReservasSection } from '@/components/sections/ReservasSection'
+import { ProShopSection } from '@/components/sections/ProShopSection'
+import { ReglasSection } from '@/components/sections/ReglasSection'
+import { AdminSection } from '@/components/sections/AdminSection'
+import { StarterSection } from '@/components/sections/StarterSection'
+import { LoginModal } from '@/components/auth/LoginModal'
+import {
+  ArrowLeft,
+  CalendarDays,
+  ShoppingBag,
+  BookOpen
+} from 'lucide-react'
 
 export default function MonteverdeHome() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('inicio')
-  const [date, setDate] = useState('2026-09-18')
-  const [selectedTime, setSelectedTime] = useState('08:20')
-  const [players, setPlayers] = useState(2)
-  const [cart, setCart] = useState(false)
-  const [cartCount, setCartCount] = useState(0)
-  const [openRule, setOpenRule] = useState(0)
-  const [booked, setBooked] = useState(false)
+  const [activeSection, setActiveSection] = useState<SectionId>('inicio')
+  const [menuOpen, setMenuOpen] = useState<boolean>(false)
+  const [cartCount, setCartCount] = useState<number>(0)
+  const { user, isHydrated } = useAuth()
+
+  // STRICT ACCESS CONTROL & IMMEDIATE REDIRECT:
+  // - Starter -> directly and exclusively in 'starter'
+  // - Admin   -> directly and exclusively in 'admin'
+  // - Visitor/Socio -> restricted from 'admin' and 'starter'
+  useEffect(() => {
+    if (!isHydrated) return
+
+    if (user?.role === 'starter') {
+      if (activeSection !== 'starter') {
+        setActiveSection('starter')
+        window.scrollTo({ top: 0, behavior: 'instant' })
+      }
+    } else if (user?.role === 'admin') {
+      if (activeSection !== 'admin') {
+        setActiveSection('admin')
+        window.scrollTo({ top: 0, behavior: 'instant' })
+      }
+    } else {
+      // Unauthenticated or regular socio: prevent staying on admin or starter
+      if (activeSection === 'admin' || activeSection === 'starter') {
+        setActiveSection('inicio')
+        window.scrollTo({ top: 0, behavior: 'instant' })
+      }
+    }
+  }, [user, isHydrated, activeSection])
+
+  const handleBackToInicio = () => {
+    if (user?.role === 'starter') {
+      setActiveSection('starter')
+      return
+    }
+    if (user?.role === 'admin') {
+      setActiveSection('admin')
+      return
+    }
+    setActiveSection('inicio')
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  const handleGoToSection = (section: SectionId) => {
+    // Prohibit cross-section navigation if user is Starter or Admin
+    if (user?.role === 'starter') {
+      setActiveSection('starter')
+      return
+    }
+    if (user?.role === 'admin') {
+      setActiveSection('admin')
+      return
+    }
+    setActiveSection(section)
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
+
+  const handleLoginSuccess = (role: UserRole) => {
+    if (role === 'starter') {
+      setActiveSection('starter')
+    } else if (role === 'admin') {
+      setActiveSection('admin')
+    } else {
+      setActiveSection('inicio')
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }
 
   return (
-    <main className="h-screen overflow-hidden bg-[#071b16] text-[#f5f2e9]">
-      <header className="absolute inset-x-0 top-0 z-30 border-b border-white/10 bg-[#071b16]/40 backdrop-blur-sm"><div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-10"><button onClick={() => setActiveSection('inicio')} className="font-serif text-xl tracking-[.2em] text-[#efe9d8]">MONTEVERDE</button><nav className="hidden items-center gap-8 text-sm text-[#d9dfd6] md:flex"><button onClick={() => setActiveSection('reservas')} className="transition hover:text-[#d6b875]">Reservas</button><button onClick={() => setActiveSection('tienda')} className="transition hover:text-[#d6b875]">Pro Shop</button><button onClick={() => setActiveSection('etiqueta')} className="transition hover:text-[#d6b875]">Etiqueta</button></nav><button aria-label="Abrir menú" onClick={() => setMenuOpen(!menuOpen)} className="rounded-full p-2 md:hidden">{menuOpen ? <X size={21} /> : <Menu size={21} />}</button></div>{menuOpen && <nav className="flex flex-col gap-4 border-t border-white/10 bg-[#071b16] px-5 py-5 text-sm md:hidden"><button onClick={() => { setActiveSection('reservas'); setMenuOpen(false) }} className="text-left">Reservas</button><button onClick={() => { setActiveSection('tienda'); setMenuOpen(false) }} className="text-left">Pro Shop</button><button onClick={() => { setActiveSection('etiqueta'); setMenuOpen(false) }} className="text-left">Etiqueta</button></nav>}</header>
-      <section id="inicio" className={`${activeSection === 'inicio' ? 'flex' : 'hidden'} relative h-[calc(100vh-72px)] items-end px-5 pb-10 pt-24 lg:px-10`}><img src="/golf-hero.png" alt="Campo de golf Monteverde al amanecer" className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[#071b16] via-[#071b16]/45 to-[#071b16]/20" /><div className="relative mx-auto w-full max-w-7xl"><p className="mb-4 text-xs font-medium uppercase tracking-[.28em] text-[#d6b875]">Club privado · Desde 1987</p><h1 className="max-w-3xl font-serif text-5xl leading-[.94] tracking-[-.035em] text-[#f5f2e9] sm:text-7xl">Juega a tu<br /><em className="text-[#d6b875]">manera.</em></h1><p className="mt-6 max-w-md text-base leading-relaxed text-[#d9dfd6]">Un campo diseñado para quedarse en la memoria. Tu próxima ronda comienza aquí.</p><button onClick={() => setActiveSection('reservas')} className="mt-8 inline-flex items-center rounded-full bg-[#d6b875] px-6 py-3 text-sm font-semibold text-[#13251d] transition hover:bg-[#ead49a]">Reservar Tee Time <span className="ml-3">↗</span></button></div></section>
-      <section id="reservas" className={`${activeSection === 'reservas' ? 'block' : 'hidden'} mx-auto h-[calc(100vh-72px)] max-w-7xl overflow-y-auto px-5 py-8 lg:px-10 lg:py-12`}><div className="mb-10 flex items-end justify-between"><div><p className="eyebrow">01 · Tu ronda</p><h2 className="section-title">Reserva tu<br /><em>tee time.</em></h2></div><CalendarDays className="mb-2 text-[#d6b875]" size={28} /></div><div className="grid gap-5 lg:grid-cols-[1.1fr_.9fr]"><div className="rounded-2xl border border-white/10 bg-[#0c2820] p-5 sm:p-7"><label className="eyebrow mb-3 block">Selecciona una fecha</label><input type="date" value={date} onChange={e => setDate(e.target.value)} className="mb-8 w-full border-b border-white/20 bg-transparent pb-3 text-lg text-[#f5f2e9] outline-none" /><label className="eyebrow mb-4 block">Horarios disponibles</label><div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{times.map(time => <button key={time} onClick={() => setSelectedTime(time)} className={`rounded-lg border px-3 py-3 text-sm transition ${selectedTime === time ? 'border-[#d6b875] bg-[#d6b875] text-[#13251d]' : 'border-white/10 text-[#d9dfd6] hover:border-[#d6b875]'}`}>{time}</button>)}</div></div><div className="rounded-2xl bg-[#f5f2e9] p-5 text-[#13251d] sm:p-7"><p className="eyebrow text-[#64746a]">Confirmar reserva</p><div className="mt-5 space-y-4"><input aria-label="Nombre completo" placeholder="Nombre completo" className="field" /><div className="flex items-center justify-between border-b border-[#13251d]/20 pb-3"><span className="text-sm">Jugadores</span><div className="flex items-center gap-4"><button onClick={() => setPlayers(Math.max(1, players - 1))} aria-label="Menos jugadores"><Minus size={16} /></button><strong>{players}</strong><button onClick={() => setPlayers(Math.min(4, players + 1))} aria-label="Más jugadores"><Plus size={16} /></button></div></div><label className="flex items-center justify-between border-b border-[#13251d]/20 pb-3 text-sm"><span>Carrito de golf <span className="text-[#64746a]">(+€35)</span></span><input type="checkbox" checked={cart} onChange={e => setCart(e.target.checked)} className="accent-[#167052]" /></label><button onClick={() => setBooked(true)} className="mt-2 w-full rounded-full bg-[#167052] py-3.5 text-sm font-semibold text-white transition hover:bg-[#1c8966]">{booked ? 'Solicitud enviada' : `Solicitar · ${selectedTime}`}</button></div></div></div></section>
-      <section id="tienda" className={`${activeSection === 'tienda' ? 'block' : 'hidden'} h-[calc(100vh-72px)] overflow-y-auto border-y border-white/10 bg-[#f5f2e9] px-5 py-8 text-[#13251d] lg:px-10 lg:py-12`}><div className="mx-auto max-w-7xl"><div className="flex items-end justify-between"><div><p className="eyebrow text-[#64746a]">02 · La tienda</p><h2 className="section-title">Selección<br /><em>del club.</em></h2></div><div className="relative"><ShoppingBag size={22} /><span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#d6b875] text-[10px]">{cartCount}</span></div></div><div className="mt-10 grid gap-5 sm:grid-cols-3">{products.map(product => <article key={product.name} className="group"><div className="relative mb-4 aspect-[4/5] overflow-hidden rounded-2xl bg-[#dfe4dc]"><img src={product.image} alt={product.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" /><span className="absolute left-3 top-3 rounded-full bg-[#f5f2e9]/90 px-3 py-1 text-[10px] uppercase tracking-widest">{product.category}</span></div><div className="flex items-start justify-between"><div><h3 className="font-serif text-xl">{product.name}</h3><p className="mt-1 text-sm text-[#64746a]">{product.price}</p></div><button onClick={() => setCartCount(cartCount + 1)} aria-label={`Añadir ${product.name}`} className="rounded-full border border-[#13251d]/20 p-2 transition hover:bg-[#13251d] hover:text-white"><Plus size={17} /></button></div></article>)}</div></div></section>
-      <section id="etiqueta" className={`${activeSection === 'etiqueta' ? 'block' : 'hidden'} mx-auto h-[calc(100vh-72px)] max-w-7xl overflow-y-auto px-5 py-8 lg:px-10 lg:py-12`}><div className="grid gap-10 lg:grid-cols-[.8fr_1.2fr]"><div><p className="eyebrow">03 · El espíritu</p><h2 className="section-title">Jugar bien<br /><em>es cuidar.</em></h2><p className="mt-6 max-w-sm text-sm leading-relaxed text-[#aab8af]">La elegancia del golf vive en los pequeños gestos. Conoce nuestras reglas de etiqueta.</p></div><div className="border-t border-white/15">{rules.map(([title, text], index) => <div key={title} className="border-b border-white/15"><button onClick={() => setOpenRule(openRule === index ? -1 : index)} className="flex w-full items-center justify-between py-5 text-left text-base"><span><span className="mr-4 text-xs text-[#d6b875]">0{index + 1}</span>{title}</span><ChevronDown size={18} className={`text-[#d6b875] transition ${openRule === index ? 'rotate-180' : ''}`} /></button>{openRule === index && <p className="max-w-xl pb-5 pl-9 text-sm leading-relaxed text-[#aab8af]">{text}</p>}</div>)}</div></div></section>
-      <footer className="border-t border-white/10 px-5 pb-24 pt-8 lg:px-10 lg:pb-10"><div className="mx-auto max-w-7xl"><nav aria-label="Accesos principales" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-white/10 bg-[#071b16]/95 px-2 py-2 backdrop-blur-lg md:static md:mb-8 md:flex md:justify-center md:gap-10 md:border-0 md:bg-transparent md:p-0"><button onClick={() => setActiveSection('inicio')} className={`flex flex-col items-center gap-1 py-1 text-[10px] transition ${activeSection === 'inicio' ? 'text-[#d6b875]' : 'text-[#d9dfd6]'}`}><House size={19} strokeWidth={1.8} /><span>Inicio</span></button><button onClick={() => setActiveSection('reservas')} className={`flex flex-col items-center gap-1 py-1 text-[10px] transition ${activeSection === 'reservas' ? 'text-[#d6b875]' : 'text-[#d9dfd6]'}`}><CalendarDays size={19} strokeWidth={1.8} /><span>Reservar</span></button><button onClick={() => setActiveSection('tienda')} className={`flex flex-col items-center gap-1 py-1 text-[10px] transition ${activeSection === 'tienda' ? 'text-[#d6b875]' : 'text-[#d9dfd6]'}`}><ShoppingBag size={19} strokeWidth={1.8} /><span>Tienda</span></button><button onClick={() => setActiveSection('etiqueta')} className={`flex flex-col items-center gap-1 py-1 text-[10px] transition ${activeSection === 'etiqueta' ? 'text-[#d6b875]' : 'text-[#d9dfd6]'}`}><Sprout size={19} strokeWidth={1.8} /><span>Etiqueta</span></button></nav><div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-serif text-xl tracking-[.16em]">MONTEVERDE</p><p className="mt-2 flex items-center gap-2 text-xs text-[#aab8af]"><MapPin size={13} /> Camino del Roble 18 · Madrid</p></div><div className="flex gap-4 text-xs uppercase tracking-widest text-[#aab8af]"><a href="#inicio" aria-label="Instagram">Instagram</a><a href="#inicio" aria-label="X">X</a></div><p className="text-xs text-[#64746a]">© 2026 Monteverde Golf Club</p></div></div></footer>
-    </main>
+    <div className="dark:bg-[#071b16] bg-[#f8f6f0] dark:text-[#f5f2e9] text-[#122a22] flex flex-col min-h-screen selection:bg-[#d6b875] selection:text-[#071b16] transition-colors duration-200">
+      <Header
+        activeSection={activeSection}
+        setActiveSection={setActiveSection}
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+      />
+
+      <main className="flex-1 flex flex-col">
+        {/* CASE 1: STARTER ROLE -> DIRECT & EXCLUSIVE ACCESS TO STARTER CONTROL */}
+        {isHydrated && user?.role === 'starter' && (
+          <div className="flex-1 animate-in fade-in duration-300">
+            <StarterSection />
+          </div>
+        )}
+
+        {/* CASE 2: ADMIN ROLE -> DIRECT & EXCLUSIVE ACCESS TO ADMIN SUITE */}
+        {isHydrated && user?.role === 'admin' && (
+          <div className="flex-1 animate-in fade-in duration-300">
+            <AdminSection />
+          </div>
+        )}
+
+        {/* CASE 3: PUBLIC / SOCIO -> PUBLIC CLUB EXPERIENCE */}
+        {(!isHydrated || !user || user.role === 'socio') && (
+          <>
+            {activeSection !== 'inicio' && (
+              <div className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 lg:px-10 flex items-center justify-between flex-wrap gap-2.5 border-b dark:border-white/10 border-stone-200 pb-3">
+                <button
+                  onClick={handleBackToInicio}
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#8c6d2d] hover:text-[#5a4313] dark:text-[#d6b875] dark:hover:text-[#ead49a] cursor-pointer transition-colors"
+                >
+                  <ArrowLeft size={15} />
+                  <span>Volver a Inicio</span>
+                </button>
+
+                {/* Botones de navegación en el body entre secciones públicas */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    onClick={() => handleGoToSection('reservas')}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                      activeSection === 'reservas'
+                        ? 'bg-[#d6b875] text-[#071b16] font-bold shadow-sm'
+                        : 'dark:bg-[#0c2820] dark:text-[#d9dfd6] dark:hover:text-[#d6b875] dark:border-white/10 bg-white text-stone-700 hover:text-[#8c6d2d] border border-stone-300/80 shadow-xs'
+                    }`}
+                  >
+                    <CalendarDays size={14} />
+                    <span>Tee Time</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleGoToSection('tienda')}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                      activeSection === 'tienda'
+                        ? 'bg-[#d6b875] text-[#071b16] font-bold shadow-sm'
+                        : 'dark:bg-[#0c2820] dark:text-[#d9dfd6] dark:hover:text-[#d6b875] dark:border-white/10 bg-white text-stone-700 hover:text-[#8c6d2d] border border-stone-300/80 shadow-xs'
+                    }`}
+                  >
+                    <ShoppingBag size={14} />
+                    <span>Pro Shop</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleGoToSection('reglas')}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                      activeSection === 'reglas'
+                        ? 'bg-[#d6b875] text-[#071b16] font-bold shadow-sm'
+                        : 'dark:bg-[#0c2820] dark:text-[#d9dfd6] dark:hover:text-[#d6b875] dark:border-white/10 bg-white text-stone-700 hover:text-[#8c6d2d] border border-stone-300/80 shadow-xs'
+                    }`}
+                  >
+                    <BookOpen size={14} />
+                    <span>Reglas</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'inicio' && (
+              <HeroSection activeSection={activeSection} setActiveSection={setActiveSection} />
+            )}
+            {activeSection === 'reservas' && (
+              <div className="flex-1 animate-in fade-in duration-300">
+                <ReservasSection activeSection={activeSection} />
+              </div>
+            )}
+            {activeSection === 'tienda' && (
+              <div className="flex-1 animate-in fade-in duration-300">
+                <ProShopSection activeSection={activeSection} cartCount={cartCount} setCartCount={setCartCount} />
+              </div>
+            )}
+            {activeSection === 'reglas' && (
+              <div className="flex-1 animate-in fade-in duration-300">
+                <ReglasSection activeSection={activeSection} />
+              </div>
+            )}
+          </>
+        )}
+      </main>
+
+      <Footer />
+      <LoginModal onLoginSuccess={handleLoginSuccess} />
+    </div>
   )
 }
