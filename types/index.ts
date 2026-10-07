@@ -1,4 +1,4 @@
-export type SectionId = 'inicio' | 'reservas' | 'tienda' | 'reglas' | 'admin' | 'starter'
+export type SectionId = 'inicio' | 'reservas' | 'tienda' | 'reglas' | 'club' | 'admin' | 'starter'
 
 export type UserRole = 'admin' | 'starter' | 'socio'
 

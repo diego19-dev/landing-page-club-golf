@@ -3,8 +3,9 @@
 @import 'shadcn/tailwind.css';
 
 @theme {
-  --font-sans: var(--font-sans), system-ui, -apple-system, sans-serif;
-  --font-serif: var(--font-serif), Georgia, serif;
+  --font-sans: var(--font-roboto), system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-roboto), system-ui, sans-serif;
+  --font-cinzel: var(--font-roboto), system-ui, sans-serif;
 }
 
 @custom-variant dark (&:is(.dark *));
@@ -417,5 +418,10 @@ input, textarea, select {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+/* Ocultar badge de desarrollo Next.js en mobile para evitar cualquier solapamiento */
+nextjs-portal, [data-nextjs-dev-tools-button], [data-next-badge], [data-nextjs-toast] {
+  display: none !important;
 }
 

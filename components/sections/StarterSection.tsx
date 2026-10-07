@@ -23,11 +23,25 @@ import {
   Info,
   TrendingUp,
   X,
-  Filter
+  Filter,
+  Wind,
+  Sun,
+  Gauge
 } from 'lucide-react'
+import { useWeather } from '@/lib/useWeather'
+import { GolfWeatherModal } from '@/components/weather/GolfWeatherModal'
 
 export function StarterSection() {
   const { user } = useAuth()
+  const [weatherModalOpen, setWeatherModalOpen] = useState(false)
+  const {
+    locations,
+    currentLocation,
+    selectedLocationId,
+    setSelectedLocationId,
+    refresh,
+    isRefreshing,
+  } = useWeather()
 
   // 7 days window (Hoy hasta Hoy + 7 días)
   const daysWindow: DaySchedule[] = useMemo(() => getSevenDaysWindow(), [])
@@ -224,6 +238,52 @@ export function StarterSection() {
             >
               <Plus size={16} strokeWidth={2.5} />
               <span>Salida Rápida (Walk-in)</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Live Weather & Wind Conditions Bar for Starter */}
+        <div className="mt-5 p-3.5 rounded-2xl dark:bg-[#051410]/90 bg-stone-50 border dark:border-white/10 border-stone-200/90 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl dark:bg-[#10b981]/20 bg-emerald-100 text-[#10b981]">
+              <Wind size={18} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold dark:text-[#efe9d8] text-[#122a22]">
+                  {currentLocation?.name || 'Condiciones Meteorológicas en Directo'}
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/30">
+                  {currentLocation?.current.playability || 'Óptimo'}
+                </span>
+              </div>
+              <p className="text-[11px] dark:text-stone-400 text-stone-500">
+                {currentLocation?.current.conditionLabel || 'Condiciones ideales para asignación de salidas.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 text-xs font-mono shrink-0 flex-wrap">
+            <div className="flex items-center gap-1.5 dark:text-stone-300 text-stone-700">
+              <Sun size={14} className="text-[#d6b875]" />
+              <span>{currentLocation ? `${currentLocation.current.temperature}°C` : '20.3°C'}</span>
+            </div>
+            <div className="flex items-center gap-1.5 dark:text-stone-300 text-stone-700">
+              <Wind size={14} className="text-[#10b981]" />
+              <span>
+                {currentLocation
+                  ? `${currentLocation.current.windSpeed10m} km/h ${currentLocation.current.windDirectionCardinal}`
+                  : '6 km/h SE'}
+              </span>
+            </div>
+            <div className="text-[11px] text-[#d6b875]">
+              80m: <strong>{currentLocation?.current.windSpeed80m || 8.5} km/h</strong>
+            </div>
+            <button
+              onClick={() => setWeatherModalOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-[#d6b875]/20 hover:bg-[#d6b875] text-[#8c6d2d] hover:text-[#071b16] dark:text-[#d6b875] dark:hover:text-[#071b16] font-bold text-[11px] uppercase transition-colors cursor-pointer"
+            >
+              Ver Radar Completo
             </button>
           </div>
         </div>
@@ -779,6 +839,18 @@ export function StarterSection() {
           </div>
         </div>
       )}
+
+      {/* Weather Modal */}
+      <GolfWeatherModal
+        isOpen={weatherModalOpen}
+        onClose={() => setWeatherModalOpen(false)}
+        locations={locations}
+        currentLocation={currentLocation}
+        selectedLocationId={selectedLocationId}
+        onSelectLocation={setSelectedLocationId}
+        onRefresh={refresh}
+        isRefreshing={isRefreshing}
+      />
     </div>
   )
 }

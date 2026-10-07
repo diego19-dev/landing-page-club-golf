@@ -1,26 +1,20 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Cinzel, Plus_Jakarta_Sans } from 'next/font/google'
+import { Roboto } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/lib/auth-context'
 import { ThemeProvider } from '@/lib/theme-context'
 
-const cinzel = Cinzel({
+const roboto = Roboto({
   subsets: ['latin'],
-  variable: '--font-serif',
-  display: 'swap',
-})
-
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-sans',
+  weight: ['300', '400', '500', '700', '900'],
+  variable: '--font-roboto',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'Monteverde Golf Club | Campo Privado de Golf en Madrid',
-  description: 'Reserva tu tee time, descubre la selección del Pro Shop y conoce la etiqueta del exclusivo Monteverde Golf Club.',
-  generator: 'v0.app',
+  title: 'Monteverde Golf Club · Campo Privado & Recorrido de Campeonato (1987)',
+  description: '18 hoyos de campeonato diseñados por Javier Arana en plena dehesa madrileña. Reserva exclusiva de tee times, boutique Pro Shop y tradición.',
 }
 
 export const viewport: Viewport = {
@@ -32,7 +26,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${cinzel.variable} ${jakarta.variable} dark`} suppressHydrationWarning>
+    <html lang="es" className={`${roboto.variable} dark`} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
