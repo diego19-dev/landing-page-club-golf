@@ -272,12 +272,12 @@ export function StarterSection() {
               <Wind size={14} className="text-[#10b981]" />
               <span>
                 {currentLocation
-                  ? `${currentLocation.current.windSpeed10m} km/h ${currentLocation.current.windDirectionCardinal}`
+                  ? `${Math.round(currentLocation.current.windSpeed10m * 10) / 10} km/h ${currentLocation.current.windDirectionCardinal}`
                   : '6 km/h SE'}
               </span>
             </div>
             <div className="text-[11px] text-[#d6b875]">
-              80m: <strong>{currentLocation?.current.windSpeed80m || 8.5} km/h</strong>
+              80m: <strong>{Math.round((currentLocation?.current.windSpeed80m || 8.5) * 10) / 10} km/h</strong>
             </div>
             <button
               onClick={() => setWeatherModalOpen(true)}

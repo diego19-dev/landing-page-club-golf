@@ -93,7 +93,7 @@ export async function GET() {
 
       const currentSecs = Number(current.time())
       // Current hour estimate to extract 80m wind
-      let currentWind80m = windSpeedVal * 1.35 // fallback estimation if hourly mismatch
+      let currentWind80m = Number((windSpeedVal * 1.35).toFixed(1))
 
       const hourlyPoints = []
       for (let i = 0; i < hourlyTimesCount; i++) {
@@ -127,8 +127,8 @@ export async function GET() {
         name: meta.name,
         shortName: meta.shortName,
         zone: meta.zone,
-        latitude: Number(latitude.toFixed(4)),
-        longitude: Number(longitude.toFixed(4)),
+        latitude: Number(latitude.toFixed(1)),
+        longitude: Number(longitude.toFixed(1)),
         elevation,
         current: {
           time: new Date((Number(current.time()) + utcOffsetSeconds) * 1000).toISOString(),
@@ -169,26 +169,26 @@ export async function GET() {
         name: meta.name,
         shortName: meta.shortName,
         zone: meta.zone,
-        latitude: idx === 0 ? 7.125 : 6.7534,
-        longitude: idx === 0 ? -73.1189 : -73.1047,
+        latitude: idx === 0 ? 7.1 : 6.8,
+        longitude: idx === 0 ? -73.1 : -73.1,
         elevation: idx === 0 ? 980 : 1650,
         current: {
           time: new Date().toISOString(),
-          temperature: baseTemp,
-          windSpeed10m: baseWind,
+          temperature: Number(baseTemp.toFixed(1)),
+          windSpeed10m: Number(baseWind.toFixed(1)),
           windDirection10m: windDir,
           windDirectionCardinal: getCardinalDirection(windDir),
-          windGusts10m: baseWind * 1.6,
-          windSpeed80m: baseWind * 1.35,
+          windGusts10m: Number((baseWind * 1.6).toFixed(1)),
+          windSpeed80m: Number((baseWind * 1.35).toFixed(1)),
           playability: 'Óptimo',
           conditionLabel: 'Condiciones excelentes para recorrido.',
         },
         hourly: Array.from({ length: 24 }, (_, i) => ({
           time: new Date(Date.now() + i * 3600000).toISOString(),
           hourLabel: `${String(i).padStart(2, '0')}:00`,
-          temperature: +(baseTemp + Math.sin(i / 3) * 3).toFixed(1),
-          windSpeed10m: +(baseWind + Math.sin(i / 2) * 2).toFixed(1),
-          windSpeed80m: +((baseWind + Math.sin(i / 2) * 2) * 1.35).toFixed(1),
+          temperature: Number((baseTemp + Math.sin(i / 3) * 3).toFixed(1)),
+          windSpeed10m: Number((baseWind + Math.sin(i / 2) * 2).toFixed(1)),
+          windSpeed80m: Number(((baseWind + Math.sin(i / 2) * 2) * 1.35).toFixed(1)),
         })),
       }
     })

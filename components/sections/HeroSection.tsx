@@ -94,16 +94,13 @@ export function HeroSection({ setActiveSection, onExploreCourse }: HeroSectionPr
         </video>
 
         {/* Sophisticated Editorial Vignette & Gradients */}
+        {/* 1. Directional cinema scrim (Left-to-Right) for typography contrast on desktop */}
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-r dark:from-[#04110d]/95 from-[#04110d]/95 via-[#04110d]/70 via-45% to-transparent" />
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t dark:from-[#071b16] from-[#071b16]/95 via-[#071b16]/50 via-45% to-black/40" />
         <div className="absolute inset-0 pointer-events-none bg-radial-gradient from-transparent to-black/40" />
 
-        {/* Top Floating Heritage Badge */}
-        <div className="relative z-10 mx-auto w-full max-w-7xl flex items-center justify-between">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 border border-white/15 backdrop-blur-md text-[10px] sm:text-xs font-semibold uppercase tracking-[0.25em] text-[#d6b875]">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />
-            <span>Club Privado · Fundado en 1987 · Madrid</span>
-          </div>
-
+        {/* Top Bar with Live Weather Ticker */}
+        <div className="relative z-10 mx-auto w-full max-w-7xl flex items-center justify-end">
           {/* Live Open-Meteo weather conditions ticker on desktop */}
           <button
             onClick={() => setWeatherModalOpen(true)}
@@ -119,7 +116,7 @@ export function HeroSection({ setActiveSection, onExploreCourse }: HeroSectionPr
               <Wind size={13} className="text-[#d6b875] group-hover:rotate-45 transition-transform" />
               <span>
                 {currentLocation
-                  ? `${currentLocation.current.windSpeed10m} km/h ${currentLocation.current.windDirectionCardinal}`
+                  ? `${Math.round(currentLocation.current.windSpeed10m * 10) / 10} km/h ${currentLocation.current.windDirectionCardinal}`
                   : '6.4 km/h SE'}
               </span>
             </span>
@@ -133,10 +130,6 @@ export function HeroSection({ setActiveSection, onExploreCourse }: HeroSectionPr
         {/* Main Editorial Hero Typography */}
         <div className="relative z-10 mx-auto w-full max-w-7xl my-auto pt-10 sm:pt-14 pb-8">
           <div className="max-w-3xl">
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.35em] text-[#d6b875] mb-3 sm:mb-4">
-              Javier Arana Master Design
-            </p>
-
             <h1 className="font-serif text-[clamp(2.5rem,7.5vw,5.5rem)] font-light text-white leading-[1.02] tracking-tight">
               El arte y la cadencia <br />
               <span className="font-light italic text-[#ebd49a]">del golf clásico.</span>

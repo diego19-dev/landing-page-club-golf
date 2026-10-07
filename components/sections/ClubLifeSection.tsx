@@ -1,16 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import {
-  Crown,
-  UtensilsCrossed,
-  Activity,
-  Award,
-  Sparkles,
-  ArrowRight,
-  ShieldCheck,
-  CheckCircle2
-} from 'lucide-react'
+import { Crown, ArrowRight } from 'lucide-react'
 
 interface ClubLifeSectionProps {
   onOpenAdmission: () => void
@@ -38,7 +29,7 @@ export function ClubLifeSection({ onOpenAdmission }: ClubLifeSectionProps) {
         </div>
 
         {/* Feature Hero Card with Clubhouse Image */}
-        <div className="relative rounded-3xl overflow-hidden mb-12 border dark:border-white/10 border-stone-300 shadow-xl group">
+        <div className="relative rounded-3xl overflow-hidden border dark:border-white/10 border-stone-300 shadow-xl group">
           <div className="relative h-96 sm:h-[460px] w-full">
             <Image
               src="/clubhouse-twilight.jpg"
@@ -69,96 +60,6 @@ export function ClubLifeSection({ onOpenAdmission }: ClubLifeSectionProps) {
                 <ArrowRight size={14} />
               </button>
             </div>
-          </div>
-        </div>
-
-        {/* 3 Pillars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: Membresía */}
-          <div className="p-8 rounded-3xl dark:bg-[#0c2820] bg-white border dark:border-white/10 border-stone-200 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
-            <div>
-              <div className="w-12 h-12 rounded-2xl dark:bg-[#d6b875]/15 bg-amber-100 dark:text-[#d6b875] text-[#8c6d2d] flex items-center justify-center mb-6">
-                <Crown size={22} />
-              </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-normal dark:text-[#f5f2e9] text-[#122a22] mb-3">
-                Membresía Limitada
-              </h3>
-              <p className="text-xs sm:text-sm dark:text-[#aab8af] text-stone-600 leading-relaxed font-light mb-6">
-                Un censo cerrado de 350 socios para garantizar partidos fluidos, tee times preferentes sin esperas y acceso absoluto a todos los eventos sociales.
-              </p>
-            </div>
-            <ul className="space-y-2.5 border-t dark:border-white/10 border-stone-100 pt-6 text-xs dark:text-stone-300 text-stone-700">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Taquilla de madera de nogal y custodia de palos</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Invitaciones de cortesía mensuales</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Correspondencia con clubes de prestigio en Europa</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Card 2: Academia & TrackMan */}
-          <div className="p-8 rounded-3xl dark:bg-[#0c2820] bg-white border dark:border-white/10 border-stone-200 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
-            <div>
-              <div className="w-12 h-12 rounded-2xl dark:bg-[#d6b875]/15 bg-amber-100 dark:text-[#d6b875] text-[#8c6d2d] flex items-center justify-center mb-6">
-                <Activity size={22} />
-              </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-normal dark:text-[#f5f2e9] text-[#122a22] mb-3">
-                Academia & TrackMan 4
-              </h3>
-              <p className="text-xs sm:text-sm dark:text-[#aab8af] text-stone-600 leading-relaxed font-light mb-6">
-                Centro de alto rendimiento con simuladores radar TrackMan 4, laboratorio de putt SAM PuttLab y fitting multimarca guiado por maestros PGA.
-              </p>
-            </div>
-            <ul className="space-y-2.5 border-t dark:border-white/10 border-stone-100 pt-6 text-xs dark:text-stone-300 text-stone-700">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Driving range de 300m sobre césped natural</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Zona de juego corto de 4.000 m² con bunkers</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Clases particulares y clínicas para juniors</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Card 3: Torneos & Competición */}
-          <div className="p-8 rounded-3xl dark:bg-[#0c2820] bg-white border dark:border-white/10 border-stone-200 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow">
-            <div>
-              <div className="w-12 h-12 rounded-2xl dark:bg-[#d6b875]/15 bg-amber-100 dark:text-[#d6b875] text-[#8c6d2d] flex items-center justify-center mb-6">
-                <Award size={22} />
-              </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-normal dark:text-[#f5f2e9] text-[#122a22] mb-3">
-                Torneos & Copas de Honor
-              </h3>
-              <p className="text-xs sm:text-sm dark:text-[#aab8af] text-stone-600 leading-relaxed font-light mb-6">
-                Un calendario anual con más de 40 competiciones oficiales: Gran Copa Presidente, Circuito Benéfico de Otoño y el tradicional Derby Match Play.
-              </p>
-            </div>
-            <ul className="space-y-2.5 border-t dark:border-white/10 border-stone-100 pt-6 text-xs dark:text-stone-300 text-stone-700">
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Ranking interno y hándicap federado oficial</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Entrega de trofeos y cenas de gala de socios</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <CheckCircle2 size={14} className="text-[#8c6d2d] dark:text-[#d6b875] shrink-0" />
-                <span>Premios exclusivos y clasificaciones en vivo</span>
-              </li>
-            </ul>
           </div>
         </div>
       </div>

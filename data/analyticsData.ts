@@ -51,7 +51,7 @@ export const PRO_SHOP_ANALYTICS: ProShopAnalytics = {
       totalRevenue: 5868,
       currentStock: 4,
       stockStatus: 'bajo',
-      image: 'https://images.unsplash.com/photo-1592919505780-303950717480?auto=format&fit=crop&w=300&q=80',
+      image: '/products/driver-apex.jpg',
     },
     {
       id: 'prod-2',
@@ -62,7 +62,7 @@ export const PRO_SHOP_ANALYTICS: ProShopAnalytics = {
       totalRevenue: 3382,
       currentStock: 18,
       stockStatus: 'optimo',
-      image: 'https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?auto=format&fit=crop&w=300&q=80',
+      image: '/products/polo-heritage.jpg',
     },
     {
       id: 'prod-3',
@@ -73,7 +73,7 @@ export const PRO_SHOP_ANALYTICS: ProShopAnalytics = {
       totalRevenue: 2668,
       currentStock: 2,
       stockStatus: 'critico',
-      image: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=300&q=80',
+      image: '/products/bolas-titleist.jpg',
     },
     {
       id: 'prod-4',
@@ -84,7 +84,7 @@ export const PRO_SHOP_ANALYTICS: ProShopAnalytics = {
       totalRevenue: 1536,
       currentStock: 14,
       stockStatus: 'optimo',
-      image: 'https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?auto=format&fit=crop&w=300&q=80',
+      image: '/products/guante-tour.jpg',
     },
     {
       id: 'prod-5',
@@ -95,7 +95,7 @@ export const PRO_SHOP_ANALYTICS: ProShopAnalytics = {
       totalRevenue: 1395,
       currentStock: 3,
       stockStatus: 'bajo',
-      image: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&w=300&q=80',
+      image: '/products/putter-odyssey.jpg',
     },
   ],
   salesByCategory: [

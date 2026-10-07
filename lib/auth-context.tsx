@@ -10,7 +10,7 @@ export const DEMO_USERS: Record<UserRole, User> = {
     email: 'admin@monteverde.golf',
     role: 'admin',
     title: 'Director de Operaciones & Gerencia',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+    avatar: '/avatars/admin.jpg',
   },
   starter: {
     id: 'usr-starter-1',
@@ -18,7 +18,7 @@ export const DEMO_USERS: Record<UserRole, User> = {
     email: 'starter@monteverde.golf',
     role: 'starter',
     title: 'Starter Jefe de Campo - Hoyos 1 y 10',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+    avatar: '/avatars/starter.jpg',
   },
   socio: {
     id: 'usr-socio-1',
@@ -27,7 +27,7 @@ export const DEMO_USERS: Record<UserRole, User> = {
     role: 'socio',
     title: 'Socio Activo #320',
     handicap: 8.4,
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+    avatar: '/avatars/socio.jpg',
   },
 }
 

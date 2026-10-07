@@ -117,9 +117,6 @@ export function Header({
             <span className="font-serif text-base sm:text-xl tracking-[.18em] sm:tracking-[.22em] dark:text-[#efe9d8] text-[#122a22] group-hover:text-[#bfa056] dark:group-hover:text-[#d6b875] transition-colors block leading-none">
               MONTEVERDE
             </span>
-            <span className="text-[9px] uppercase tracking-[.25em] dark:text-[#d6b875]/80 text-[#8c6d2d] font-semibold block mt-0.5">
-              Golf Club · 1987
-            </span>
           </div>
 
           {/* Dedicated role badge in header when logged in */}
