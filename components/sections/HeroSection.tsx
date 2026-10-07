@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { SectionId } from '@/types'
 import {
@@ -15,7 +15,9 @@ import {
   ChevronRight,
   Sun,
   Wind,
-  Gauge
+  Gauge,
+  Play,
+  Pause
 } from 'lucide-react'
 import { useWeather } from '@/lib/useWeather'
 import { GolfWeatherModal } from '@/components/weather/GolfWeatherModal'
@@ -33,6 +35,19 @@ export function HeroSection({ setActiveSection, onExploreCourse }: HeroSectionPr
   const [roundType, setRoundType] = useState<'18' | '9'>('18')
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'noon' | 'twilight'>('morning')
   const [weatherModalOpen, setWeatherModalOpen] = useState<boolean>(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(true)
+
+  const toggleVideoPlayback = () => {
+    if (!videoRef.current) return
+    if (videoRef.current.paused) {
+      videoRef.current.play()
+      setIsVideoPlaying(true)
+    } else {
+      videoRef.current.pause()
+      setIsVideoPlaying(false)
+    }
+  }
 
   const {
     locations,
@@ -64,15 +79,19 @@ export function HeroSection({ setActiveSection, onExploreCourse }: HeroSectionPr
     <div id="inicio" className="relative w-full flex flex-col overflow-hidden">
       {/* Hero Visual Full-Viewport Stage */}
       <section className="relative w-full min-h-[92svh] flex flex-col justify-between px-4 pt-12 pb-16 sm:px-6 sm:pb-20 lg:px-10 lg:pb-24">
-        {/* Full-bleed background */}
-        <Image
-          src="/championship-course.jpg"
-          alt="Campo de golf Monteverde al amanecer con vista al lago y casa club"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center transform scale-102"
-        />
+        {/* Full-bleed cinematic video background */}
+        <video
+          ref={videoRef}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster="/championship-course.jpg"
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transform scale-102"
+        >
+          <source src="/Golfer_swinging_on_golf_course_20261006235341.mp4" type="video/mp4" />
+        </video>
 
         {/* Sophisticated Editorial Vignette & Gradients */}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-t dark:from-[#071b16] from-[#071b16]/95 via-[#071b16]/50 via-45% to-black/40" />
@@ -229,13 +248,25 @@ export function HeroSection({ setActiveSection, onExploreCourse }: HeroSectionPr
             </button>
           </div>
 
-          <button
-            onClick={() => scrollToSection('el-campo')}
-            className="hidden sm:inline-flex items-center gap-2 text-xs font-medium text-stone-300 hover:text-white transition-colors cursor-pointer"
-          >
-            <span>Explorar el Club</span>
-            <ArrowDown size={14} className="animate-bounce text-[#d6b875]" />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleVideoPlayback}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium bg-black/40 hover:bg-black/60 text-stone-300 hover:text-white border border-white/15 backdrop-blur-md transition-all cursor-pointer"
+              title={isVideoPlaying ? 'Pausar video' : 'Reproducir video'}
+              aria-label={isVideoPlaying ? 'Pausar video' : 'Reproducir video'}
+            >
+              {isVideoPlaying ? <Pause size={12} className="text-[#d6b875]" /> : <Play size={12} className="text-[#d6b875]" />}
+              <span className="hidden sm:inline">{isVideoPlaying ? 'Pausar' : 'Reproducir'}</span>
+            </button>
+
+            <button
+              onClick={() => scrollToSection('el-campo')}
+              className="hidden sm:inline-flex items-center gap-2 text-xs font-medium text-stone-300 hover:text-white transition-colors cursor-pointer"
+            >
+              <span>Explorar el Club</span>
+              <ArrowDown size={14} className="animate-bounce text-[#d6b875]" />
+            </button>
+          </div>
         </div>
       </section>
 

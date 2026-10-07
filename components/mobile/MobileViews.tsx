@@ -75,8 +75,18 @@ interface MobileHomeViewProps {
 export function MobileHomeView({ onGoToTab, onOpenAdmission }: MobileHomeViewProps) {
   return (
     <div className="relative min-h-full flex flex-col p-4 pb-4 gap-4">
-      {/* Background */}
-      <Image src="/championship-course.jpg" alt="Monteverde Golf Club" fill priority className="object-cover object-center" />
+      {/* Full-bleed cinematic video background */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        poster="/championship-course.jpg"
+        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+      >
+        <source src="/Golfer_swinging_on_golf_course_20261006235341.mp4" type="video/mp4" />
+      </video>
       <div className="absolute inset-0 bg-gradient-to-t from-[#071b16]/98 via-[#071b16]/60 to-black/40 pointer-events-none" />
 
       {/* Badge row */}
