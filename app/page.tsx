@@ -18,6 +18,7 @@ import { AdminSection } from '@/components/sections/AdminSection'
 import { StarterSection } from '@/components/sections/StarterSection'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { MobileBottomNav, MobileTabId } from '@/components/mobile/MobileBottomNav'
+import { MobileStaffBar } from '@/components/mobile/MobileStaffBar'
 import {
   MobileHeader,
   MobileHomeView,
@@ -198,11 +199,21 @@ export default function MonteverdeHome() {
           ==================================================================== */}
       <div className="md:hidden fixed inset-0 overflow-hidden flex flex-col z-10 dark:bg-[#071b16] bg-[#f8f6f0] dark:text-[#f5f2e9] text-[#122a22]">
 
-        {/* Casos especiales: Starter y Admin con scroll interno propio */}
+        {/* Casos especiales: Starter y Admin con scroll interno propio y barra operativa */}
         {isHydrated && user?.role === 'starter' ? (
-          <div className="flex-1 overflow-y-auto"><StarterSection /></div>
+          <div className="flex-1 flex flex-col h-full overflow-hidden">
+            <MobileStaffBar role="starter" />
+            <div className="flex-1 overflow-y-auto overscroll-none pb-6">
+              <StarterSection />
+            </div>
+          </div>
         ) : isHydrated && user?.role === 'admin' ? (
-          <div className="flex-1 overflow-y-auto"><AdminSection /></div>
+          <div className="flex-1 flex flex-col h-full overflow-hidden">
+            <MobileStaffBar role="admin" />
+            <div className="flex-1 overflow-y-auto overscroll-none pb-6">
+              <AdminSection />
+            </div>
+          </div>
         ) : (
           <>
             {/* Cabecera compacta fija (56px) */}
@@ -221,12 +232,12 @@ export default function MonteverdeHome() {
               )}
               {mobileTab === 'reservas' && (
                 <div key="reservas" className="absolute inset-0 overflow-y-auto overscroll-none animate-in fade-in duration-150">
-                  <MobileReservasView />
+                  <MobileReservasView onGoToTab={setMobileTab} />
                 </div>
               )}
               {mobileTab === 'tienda' && (
                 <div key="tienda" className="absolute inset-0 overflow-y-auto overscroll-none animate-in fade-in duration-150">
-                  <MobileProShopView onAddToCart={handleAddToCart} />
+                  <MobileProShopView onAddToCart={handleAddToCart} cartCount={cartCount} />
                 </div>
               )}
               {mobileTab === 'club' && (

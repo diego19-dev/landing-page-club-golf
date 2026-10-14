@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 import {
   CalendarDays,
@@ -19,10 +19,18 @@ import {
   Minus,
   BookOpen,
   AlertTriangle,
-  ChevronDown
+  ChevronDown,
+  Play,
+  Pause,
+  Wind,
+  Gauge,
+  Sparkles,
+  Clock
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import { useTheme } from '@/lib/theme-context'
+import { useWeather } from '@/lib/useWeather'
+import { GolfWeatherModal } from '@/components/weather/GolfWeatherModal'
 import { PRODUCTS, GOLF_RULE_GROUPS, GOLF_RULES } from '@/data/clubData'
 import { MobileTabId } from './MobileBottomNav'
 
@@ -40,7 +48,7 @@ export function MobileHeader({ onOpenLogin }: MobileHeaderProps) {
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <header className="h-14 shrink-0 px-4 flex items-center justify-between border-b dark:border-white/10 border-stone-200/80 dark:bg-[#071b16] bg-[#f8f6f0] z-40">
+    <header className="shrink-0 px-4 pt-[env(safe-area-inset-top,0px)] h-[calc(3.5rem+env(safe-area-inset-top,0px))] flex items-center justify-between border-b dark:border-white/10 border-stone-200/80 dark:bg-[#071b16] bg-[#f8f6f0] z-40 transition-colors duration-200">
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#d6b875] to-[#8c6d2d] flex items-center justify-center shadow-md shrink-0">
           <ShieldCheck size={18} className="text-[#071b16]" />
@@ -73,272 +81,207 @@ interface MobileHomeViewProps {
 }
 
 export function MobileHomeView({ onGoToTab, onOpenAdmission }: MobileHomeViewProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [isPlaying, setIsPlaying] = useState(true)
+  const [weatherModalOpen, setWeatherModalOpen] = useState(false)
+
+  const {
+    locations,
+    currentLocation,
+    selectedLocationId,
+    setSelectedLocationId,
+    refresh,
+    isRefreshing
+  } = useWeather()
+
+  const toggleVideoPlayback = () => {
+    if (!videoRef.current) return
+    if (videoRef.current.paused) {
+      videoRef.current.play()
+      setIsPlaying(true)
+    } else {
+      videoRef.current.pause()
+      setIsPlaying(false)
+    }
+  }
+
+  const currentTemp = currentLocation?.current?.temperature
+    ? `${Math.round(currentLocation.current.temperature)}°C`
+    : '21°C'
+  const windSpeed = currentLocation?.current?.windSpeed10m
+    ? `${Math.round(currentLocation.current.windSpeed10m)} km/h`
+    : '8 km/h'
+
   return (
-    <div className="relative min-h-full flex flex-col p-4 pb-4 gap-4">
+    <div className="relative min-h-full flex flex-col p-4 pb-4 gap-3.5">
       {/* Full-bleed cinematic video background */}
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
         preload="auto"
         poster="/championship-course.jpg"
-        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transform scale-102"
       >
         <source src="/Golfer_swinging_on_golf_course_20261006235341.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-t from-[#071b16]/98 via-[#071b16]/60 to-black/40 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#071b16]/98 via-[#071b16]/65 to-black/45 pointer-events-none" />
 
-      {/* Badge row */}
+      {/* Top badges: Club status & Live Weather Pill */}
       <div className="relative z-10 flex items-center justify-between gap-2 shrink-0">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 border border-white/15 backdrop-blur-md text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d6b875]">
           <span className="w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse" />
           <span>Club Privado · 1987</span>
         </div>
-        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 border border-white/15 backdrop-blur-md text-[10px] text-white/90">
+
+        {/* Live Weather pill triggering full weather modal */}
+        <button
+          type="button"
+          onClick={() => setWeatherModalOpen(true)}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 border border-white/20 backdrop-blur-md text-[10px] text-white/95 cursor-pointer active:scale-95 transition-transform"
+        >
           <Sun size={11} className="text-[#d6b875]" />
-          <span>21°C · Greens 10.5</span>
-        </div>
+          <span>{currentTemp} · Greens 10.5</span>
+        </button>
       </div>
 
-      {/* Hero text */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center text-center py-2">
-        <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-[#d6b875] block mb-2">Campo de Campeonato · 18 Hoyos</span>
-        <h1 className="font-serif text-[1.75rem] font-light text-white leading-tight tracking-tight">
+      {/* Hero central editorial content */}
+      <div className="relative z-10 flex-1 flex flex-col justify-center text-center py-1">
+        <div className="inline-flex items-center justify-center gap-1.5 mb-2 mx-auto">
+          <Sparkles size={11} className="text-[#d6b875]" />
+          <span className="text-[10px] uppercase font-bold tracking-[0.3em] text-[#d6b875]">
+            Campo de Campeonato · 18 Hoyos
+          </span>
+        </div>
+
+        <h1 className="font-serif text-[1.85rem] font-light text-white leading-tight tracking-tight">
           El arte del golf <br />
           <em className="italic font-normal text-[#d6b875]">en su máxima expresión.</em>
         </h1>
+
         <p className="mt-2 text-xs text-stone-200/90 font-light max-w-xs mx-auto leading-relaxed">
-          18 hoyos de campeonato. Greens Agrostis de corte milimétrico. Madrid.
+          Diseño Javier Arana. Dehesa de encinas centenarias. Greens de campeonato a 20 min de Madrid.
         </p>
 
-        {/* Stats pill */}
-        <div className="mt-4 grid grid-cols-3 gap-2 px-3 py-2.5 rounded-2xl bg-black/55 border border-white/15 backdrop-blur-md text-white text-[10px] max-w-xs mx-auto w-full">
-          <div><span className="text-[#d6b875] font-bold block">PAR 72</span><span className="text-stone-300 text-[9px]">6.420m</span></div>
-          <div className="border-x border-white/15"><span className="text-[#d6b875] font-bold block">SLOPE 138</span><span className="text-stone-300 text-[9px]">Valor 73.4</span></div>
-          <div><span className="text-[#d6b875] font-bold block">VIENTO 8 km/h</span><span className="text-stone-300 text-[9px]">Excelente</span></div>
+        {/* Stats card */}
+        <div className="mt-3.5 grid grid-cols-3 gap-2 px-3 py-2.5 rounded-2xl bg-black/60 border border-white/15 backdrop-blur-md text-white text-[10px] max-w-xs mx-auto w-full shadow-lg">
+          <div>
+            <span className="text-[#d6b875] font-bold block">PAR 72</span>
+            <span className="text-stone-300 text-[9px]">6.420m</span>
+          </div>
+          <div className="border-x border-white/15">
+            <span className="text-[#d6b875] font-bold block">SLOPE 138</span>
+            <span className="text-stone-300 text-[9px]">Valor 73.4</span>
+          </div>
+          <div>
+            <span className="text-[#d6b875] font-bold block">{windSpeed}</span>
+            <span className="text-stone-300 text-[9px]">Viento Óptimo</span>
+          </div>
+        </div>
+
+        {/* Next Tee Time Pill */}
+        <div className="mt-2.5 inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[10px] text-emerald-300 backdrop-blur-xs mx-auto">
+          <Clock size={11} className="text-[#10b981]" />
+          <span>Próxima salida disponible: <strong>Hoy 08:30h · Tee 1</strong></span>
         </div>
       </div>
 
-      {/* CTA buttons */}
-      <div className="relative z-10 flex flex-col gap-2.5 max-w-xs mx-auto w-full shrink-0">
-        <button onClick={() => onGoToTab('reservas')} className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#d6b875] via-[#edd8a4] to-[#d6b875] text-[#071b16] font-bold text-xs uppercase tracking-wider shadow-xl flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer">
-          <CalendarDays size={16} /><span>Reservar Tee Time</span>
+      {/* CTA buttons row */}
+      <div className="relative z-10 flex flex-col gap-2 max-w-xs mx-auto w-full shrink-0">
+        <button
+          type="button"
+          onClick={() => onGoToTab('reservas')}
+          className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#d6b875] via-[#edd8a4] to-[#d6b875] text-[#071b16] font-bold text-xs uppercase tracking-wider shadow-xl flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+        >
+          <CalendarDays size={16} />
+          <span>Reservar Tee Time</span>
         </button>
+
         <div className="grid grid-cols-2 gap-2">
-          <button onClick={() => onGoToTab('reglas')} className="py-2.5 px-3 rounded-xl bg-black/60 border border-white/20 text-white font-medium text-xs flex items-center justify-center gap-1.5 backdrop-blur-md active:scale-[0.98] cursor-pointer">
-            <BookOpen size={14} className="text-[#d6b875]" /><span>Ver Reglas</span>
+          <button
+            type="button"
+            onClick={() => onGoToTab('reglas')}
+            className="py-2.5 px-3 rounded-xl bg-black/60 border border-white/20 text-white font-medium text-xs flex items-center justify-center gap-1.5 backdrop-blur-md active:scale-[0.98] cursor-pointer"
+          >
+            <BookOpen size={14} className="text-[#d6b875]" />
+            <span>Ver Reglas</span>
           </button>
-          <button onClick={() => onGoToTab('tienda')} className="py-2.5 px-3 rounded-xl bg-black/60 border border-white/20 text-white font-medium text-xs flex items-center justify-center gap-1.5 backdrop-blur-md active:scale-[0.98] cursor-pointer">
-            <ShoppingBag size={14} className="text-[#d6b875]" /><span>Pro Shop</span>
+          <button
+            type="button"
+            onClick={() => onGoToTab('tienda')}
+            className="py-2.5 px-3 rounded-xl bg-black/60 border border-white/20 text-white font-medium text-xs flex items-center justify-center gap-1.5 backdrop-blur-md active:scale-[0.98] cursor-pointer"
+          >
+            <ShoppingBag size={14} className="text-[#d6b875]" />
+            <span>Pro Shop</span>
           </button>
         </div>
-        <button onClick={onOpenAdmission} className="text-[11px] text-[#d6b875] font-medium flex items-center justify-center gap-1 cursor-pointer">
-          <Crown size={12} /><span>Solicitar Membresía &rarr;</span>
-        </button>
+
+        <div className="flex items-center justify-between px-1 pt-0.5">
+          <button
+            type="button"
+            onClick={onOpenAdmission}
+            className="text-[11px] text-[#d6b875] font-medium flex items-center gap-1 cursor-pointer"
+          >
+            <Crown size={12} />
+            <span>Solicitar Membresía &rarr;</span>
+          </button>
+
+          {/* Video pause/play micro-button */}
+          <button
+            type="button"
+            onClick={toggleVideoPlayback}
+            className="text-[10px] text-stone-400 hover:text-white flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/40 border border-white/10"
+          >
+            {isPlaying ? <Pause size={10} /> : <Play size={10} />}
+            <span>{isPlaying ? 'Pausar' : 'Reproducir'}</span>
+          </button>
+        </div>
       </div>
+
+      {/* Golf Weather Modal */}
+      <GolfWeatherModal
+        isOpen={weatherModalOpen}
+        onClose={() => setWeatherModalOpen(false)}
+        locations={locations}
+        currentLocation={currentLocation}
+        selectedLocationId={selectedLocationId}
+        onSelectLocation={setSelectedLocationId}
+        onRefresh={refresh}
+        isRefreshing={isRefreshing}
+      />
     </div>
   )
 }
 
 
 
+import { MobileReservasFlow } from './MobileReservasFlow'
+
 // ─────────────────────────────────────────────
-// 4. MOBILE RESERVAS VIEW (3-step wizard)
+// 4. MOBILE RESERVAS VIEW (Tee Time Flow)
 // ─────────────────────────────────────────────
-export function MobileReservasView() {
-  const [step, setStep] = useState<1 | 2 | 3>(1)
-  const [selectedDay, setSelectedDay] = useState<'Hoy' | 'Mañana' | 'Sábado' | 'Domingo'>('Hoy')
-  const [timeShift, setTimeShift] = useState<'morning' | 'afternoon'>('morning')
-  const [selectedTime, setSelectedTime] = useState('08:30')
-  const [players, setPlayers] = useState(2)
-  const [cart, setCart] = useState(false)
-  const [booked, setBooked] = useState(false)
-
-  const greenFee = 95
-  const cartPrice = 35
-  const totalPrice = players * greenFee + (cart ? cartPrice : 0)
-
-  const morningTimes = ['07:30', '08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00']
-  const afternoonTimes = ['13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30']
-  const activeTimes = timeShift === 'morning' ? morningTimes : afternoonTimes
-
-  return (
-    <div className="min-h-full flex flex-col p-3.5 gap-3 dark:bg-[#071b16] bg-[#f8f6f0]">
-      {/* Header */}
-      <div className="flex items-center justify-between shrink-0">
-        <div>
-          <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#8c6d2d] dark:text-[#d6b875]">Reserva de Tee Time</span>
-          <h2 className="text-base font-serif font-light dark:text-white text-[#071b16]">
-            {booked ? '¡Confirmada!' : step === 1 ? 'Fecha & Hora' : step === 2 ? 'Jugadores & Buggy' : 'Confirmación'}
-          </h2>
-        </div>
-        {!booked && (
-          <div className="flex gap-1">
-            {[1,2,3].map((s) => <div key={s} className={`w-6 h-1.5 rounded-full ${step >= s ? 'bg-[#d6b875]' : 'dark:bg-white/10 bg-stone-300'}`} />)}
-          </div>
-        )}
-      </div>
-
-      {/* Card */}
-      <div className="rounded-2xl border dark:border-white/10 border-stone-300 dark:bg-[#0c2820] bg-white p-4 shadow-xl flex flex-col flex-1 gap-3">
-        {booked ? (
-          <div className="my-auto text-center py-4">
-            <div className="w-16 h-16 rounded-full bg-[#10b981]/20 border border-[#10b981] text-[#10b981] flex items-center justify-center mx-auto mb-3"><CheckCircle2 size={36} /></div>
-            <h3 className="font-serif text-xl font-bold dark:text-white text-stone-900">Salida Confirmada</h3>
-            <p className="text-xs text-stone-500 mt-1">Código: <strong className="text-[#8c6d2d] dark:text-[#d6b875]">MV-2026-T92</strong></p>
-            <div className="mt-3 p-3 rounded-xl dark:bg-[#071b16] bg-stone-100 text-xs text-left space-y-1">
-              <div>📅 {selectedDay} a las {selectedTime}h</div>
-              <div>👥 {players} jugadores {cart ? '+ Buggy' : ''}</div>
-              <div>💶 Total: <strong>€{totalPrice}</strong></div>
-            </div>
-            <button onClick={() => { setBooked(false); setStep(1) }} className="mt-4 w-full py-2.5 rounded-xl bg-[#d6b875] text-[#071b16] font-bold text-xs uppercase cursor-pointer">Nueva Reserva</button>
-          </div>
-        ) : step === 1 ? (
-          <>
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider dark:text-stone-300 text-stone-700 block mb-1.5">Día:</span>
-              <div className="grid grid-cols-4 gap-1.5 mb-3">
-                {(['Hoy','Mañana','Sábado','Domingo'] as const).map((d) => (
-                  <button key={d} onClick={() => setSelectedDay(d)} className={`py-2 rounded-xl text-xs font-bold cursor-pointer ${selectedDay === d ? 'bg-[#d6b875] text-[#071b16]' : 'dark:bg-white/5 bg-stone-100 dark:text-stone-300 text-stone-700'}`}>{d}</button>
-                ))}
-              </div>
-              <div className="flex gap-2 mb-2">
-                {(['morning','afternoon'] as const).map((s) => (
-                  <button key={s} onClick={() => setTimeShift(s)} className={`flex-1 py-1.5 text-xs font-bold rounded-lg cursor-pointer ${timeShift === s ? 'border border-[#d6b875] text-[#8c6d2d] dark:text-[#d6b875] bg-amber-50 dark:bg-[#d6b875]/10' : 'text-stone-500'}`}>
-                    {s === 'morning' ? 'Mañana' : 'Tarde'}
-                  </button>
-                ))}
-              </div>
-              <span className="text-[11px] font-bold uppercase tracking-wider dark:text-stone-300 text-stone-700 block mb-1.5">Hora de Salida:</span>
-              <div className="grid grid-cols-4 gap-1.5">
-                {activeTimes.map((t) => (
-                  <button key={t} onClick={() => setSelectedTime(t)} className={`py-2 rounded-xl text-xs font-medium cursor-pointer ${selectedTime === t ? 'bg-[#d6b875] text-[#071b16] font-bold' : 'dark:bg-white/5 bg-stone-100 dark:text-stone-200 text-stone-800'}`}>{t}</button>
-                ))}
-              </div>
-            </div>
-            <button onClick={() => setStep(2)} className="w-full py-2.5 rounded-xl bg-[#d6b875] text-[#071b16] font-bold text-xs uppercase flex items-center justify-center gap-1.5 cursor-pointer mt-auto">
-              Continuar <ChevronRight size={16} />
-            </button>
-          </>
-        ) : step === 2 ? (
-          <>
-            <div className="space-y-3">
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider dark:text-stone-300 text-stone-700 block mb-2">Jugadores:</span>
-                <div className="flex items-center justify-between p-2.5 rounded-xl dark:bg-[#071b16] bg-stone-100 border dark:border-white/10 border-stone-200">
-                  <span className="text-xs font-bold dark:text-white text-stone-900">{players} Jugador{players > 1 ? 'es' : ''} · €95 c/u</span>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setPlayers((p) => Math.max(1, p-1))} className="w-8 h-8 rounded-lg dark:bg-white/10 bg-white border border-stone-300 dark:border-white/10 flex items-center justify-center cursor-pointer"><Minus size={14} /></button>
-                    <span className="font-bold text-sm w-4 text-center">{players}</span>
-                    <button onClick={() => setPlayers((p) => Math.min(4, p+1))} className="w-8 h-8 rounded-lg dark:bg-white/10 bg-white border border-stone-300 dark:border-white/10 flex items-center justify-center cursor-pointer"><Plus size={14} /></button>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider dark:text-stone-300 text-stone-700 block mb-2">Buggy GPS:</span>
-                <button onClick={() => setCart(!cart)} className={`w-full p-2.5 rounded-xl border flex items-center justify-between cursor-pointer ${cart ? 'border-[#d6b875] bg-[#d6b875]/15 text-[#8c6d2d] dark:text-[#d6b875]' : 'dark:border-white/10 border-stone-200 dark:bg-[#071b16] bg-stone-100 text-stone-700 dark:text-stone-300'}`}>
-                  <span className="text-xs font-semibold">Buggy Eléctrico GPS (+€35)</span>
-                  <span className="text-xs font-bold">{cart ? '✓ Añadido' : '+ Añadir'}</span>
-                </button>
-              </div>
-            </div>
-            <div className="flex gap-2 mt-auto">
-              <button onClick={() => setStep(1)} className="py-2.5 px-3 rounded-xl dark:bg-white/5 bg-stone-200 text-xs font-bold cursor-pointer">Volver</button>
-              <button onClick={() => setStep(3)} className="flex-1 py-2.5 rounded-xl bg-[#d6b875] text-[#071b16] font-bold text-xs uppercase flex items-center justify-center gap-1.5 cursor-pointer">
-                Resumen <ChevronRight size={16} />
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider dark:text-stone-300 text-stone-700 block mb-2">Resumen:</span>
-              <div className="p-3 rounded-xl dark:bg-[#071b16] bg-stone-100 space-y-2 text-xs">
-                <div className="flex justify-between"><span className="text-stone-500">Fecha y Hora:</span><span className="font-bold">{selectedDay} · {selectedTime}h</span></div>
-                <div className="flex justify-between"><span className="text-stone-500">Green Fees ({players}×€95):</span><span className="font-bold">€{players*greenFee}</span></div>
-                {cart && <div className="flex justify-between"><span className="text-stone-500">Buggy GPS:</span><span className="font-bold">€{cartPrice}</span></div>}
-                <div className="border-t dark:border-white/10 border-stone-300 pt-2 flex justify-between">
-                  <span className="font-serif font-bold text-[#8c6d2d] dark:text-[#d6b875]">Total:</span>
-                  <span className="font-serif font-bold text-base text-[#8c6d2d] dark:text-[#d6b875]">€{totalPrice}</span>
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-2 mt-auto">
-              <button onClick={() => setStep(2)} className="py-2.5 px-3 rounded-xl dark:bg-white/5 bg-stone-200 text-xs font-bold cursor-pointer">Atrás</button>
-              <button onClick={() => setBooked(true)} className="flex-1 py-2.5 rounded-xl bg-[#d6b875] text-[#071b16] font-bold text-xs uppercase flex items-center justify-center gap-1.5 cursor-pointer">
-                <CheckCircle2 size={16} /><span>Confirmar Salida</span>
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  )
+interface MobileReservasViewProps {
+  onGoToTab?: (tab: MobileTabId) => void
 }
+
+export function MobileReservasView({ onGoToTab }: MobileReservasViewProps) {
+  return <MobileReservasFlow onGoToTab={onGoToTab} />
+}
+
+import { MobileProShopFlow } from './MobileProShopFlow'
 
 // ─────────────────────────────────────────────
 // 5. MOBILE PRO SHOP VIEW
 // ─────────────────────────────────────────────
 interface MobileProShopViewProps {
   onAddToCart: (name: string) => void
+  cartCount?: number
 }
 
-export function MobileProShopView({ onAddToCart }: MobileProShopViewProps) {
-  const [selectedCat, setSelectedCat] = useState<'Todos' | 'Palos' | 'Ropa' | 'Accesorios'>('Todos')
-  const [prodIndex, setProdIndex] = useState(0)
-
-  const filtered = PRODUCTS.filter((p) => selectedCat === 'Todos' ? true : p.category === selectedCat)
-  const currentProd = filtered[prodIndex % filtered.length] || PRODUCTS[0]
-
-  const handleNext = () => setProdIndex((i) => (i + 1) % filtered.length)
-  const handlePrev = () => setProdIndex((i) => (i === 0 ? filtered.length - 1 : i - 1))
-
-  return (
-    <div className="min-h-full flex flex-col p-3.5 gap-3 dark:bg-[#071b16] bg-[#f8f6f0]">
-      {/* Header */}
-      <div className="flex items-center justify-between shrink-0">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#8c6d2d] dark:text-[#d6b875] flex items-center gap-1.5"><ShoppingBag size={12} />Boutique Pro Shop</span>
-        <span className="text-[10px] font-bold text-stone-500 dark:text-stone-400">{prodIndex + 1}/{filtered.length}</span>
-      </div>
-
-      {/* Category filter */}
-      <div className="grid grid-cols-4 gap-1.5 shrink-0">
-        {(['Todos','Palos','Ropa','Accesorios'] as const).map((cat) => (
-          <button key={cat} onClick={() => { setSelectedCat(cat); setProdIndex(0) }} className={`py-1.5 rounded-lg text-xs font-bold cursor-pointer transition-all ${selectedCat === cat ? 'bg-[#d6b875] text-[#071b16]' : 'dark:bg-white/5 bg-stone-200 dark:text-stone-300 text-stone-700'}`}>{cat}</button>
-        ))}
-      </div>
-
-      {/* Product card */}
-      <div className="rounded-2xl overflow-hidden border dark:border-white/10 border-stone-300 dark:bg-[#0c2820] bg-white shadow-xl flex flex-col flex-1">
-        <div className="relative h-44 w-full shrink-0">
-          <Image src={currentProd.image} alt={currentProd.name} fill className="object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-          {currentProd.tag && <div className="absolute top-2.5 left-2.5"><span className="px-2.5 py-1 rounded-full bg-[#d6b875] text-[#071b16] text-[9px] font-bold uppercase tracking-wider">{currentProd.tag}</span></div>}
-          <div className="absolute bottom-2.5 left-3 right-3 flex items-end justify-between text-white">
-            <h3 className="font-serif text-sm font-bold truncate max-w-[180px]">{currentProd.name}</h3>
-            <span className="font-serif font-bold text-base text-[#d6b875]">{currentProd.price}</span>
-          </div>
-        </div>
-        <div className="p-3 flex flex-col gap-2 flex-1 text-xs">
-          <p className="dark:text-stone-300 text-stone-600 text-[11px] leading-relaxed">{currentProd.description}</p>
-          <div className="flex items-center justify-between text-[10px] dark:text-stone-400 text-stone-500 mt-auto">
-            <span>Envío a taquilla del club</span>
-            <span className="text-[#10b981] font-bold">En Stock</span>
-          </div>
-          <button onClick={() => onAddToCart(currentProd.name)} className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#8c6d2d] via-[#d6b875] to-[#8c6d2d] text-[#071b16] font-bold text-xs uppercase flex items-center justify-center gap-1.5 active:scale-[0.98] cursor-pointer">
-            <ShoppingBag size={14} /><span>Añadir · {currentProd.price}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex gap-2 shrink-0">
-        <button onClick={handlePrev} className="flex-1 py-2 rounded-xl dark:bg-white/5 bg-stone-200 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer active:scale-95"><ChevronLeft size={16} />Anterior</button>
-        <button onClick={handleNext} className="flex-1 py-2 rounded-xl dark:bg-white/5 bg-stone-200 text-xs font-bold flex items-center justify-center gap-1 cursor-pointer active:scale-95">Siguiente<ChevronRight size={16} /></button>
-      </div>
-    </div>
-  )
+export function MobileProShopView({ onAddToCart, cartCount = 0 }: MobileProShopViewProps) {
+  return <MobileProShopFlow onAddToCart={onAddToCart} cartCount={cartCount} />
 }
 
 // ─────────────────────────────────────────────

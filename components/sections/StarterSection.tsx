@@ -198,9 +198,9 @@ export function StarterSection() {
   const waitingGroups = currentGroups.filter((g) => g.status === 'espera' || g.status === 'llamado').length
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-10 animate-in fade-in duration-300">
+    <div className="w-full max-w-7xl mx-auto px-3 py-4 sm:px-6 sm:py-8 lg:px-10 animate-in fade-in duration-300">
       {/* Top Banner with Starter Identity */}
-      <div className="rounded-3xl border dark:border-[#10b981]/30 border-emerald-300 dark:bg-gradient-to-r dark:from-[#0c2820] dark:via-[#071b16] dark:to-[#0c2820] bg-white p-6 sm:p-7 mb-6 relative overflow-hidden shadow-lg dark:shadow-2xl dark:shadow-black/60 transition-colors duration-200">
+      <div className="rounded-3xl border dark:border-[#10b981]/30 border-emerald-300 dark:bg-gradient-to-r dark:from-[#0c2820] dark:via-[#071b16] dark:to-[#0c2820] bg-white p-4 sm:p-7 mb-4 sm:mb-6 relative overflow-hidden shadow-lg dark:shadow-2xl dark:shadow-black/60 transition-colors duration-200">
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#10b981]/15 via-transparent to-transparent pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
@@ -350,7 +350,7 @@ export function StarterSection() {
         </div>
 
         {/* Carousel / Tab List of 7 Days */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5">
+        <div className="flex overflow-x-auto pb-2 scrollbar-none sm:grid sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5">
           {daysWindow.map((day) => {
             const isSelected = day.date === selectedDateStr
             return (
@@ -358,7 +358,7 @@ export function StarterSection() {
                 key={day.date}
                 type="button"
                 onClick={() => setSelectedDateStr(day.date)}
-                className={`flex flex-col items-center justify-between p-3 rounded-2xl border text-center transition-all cursor-pointer ${
+                className={`flex flex-col items-center justify-between min-w-[72px] shrink-0 sm:min-w-0 p-2.5 sm:p-3 rounded-2xl border text-center transition-all cursor-pointer ${
                   isSelected
                     ? 'border-[#d6b875] dark:bg-gradient-to-b dark:from-[#d6b875]/25 dark:via-[#0c2820] dark:to-[#071b16] bg-amber-50/90 shadow-md ring-2 ring-[#d6b875]/80 scale-[1.02]'
                     : 'dark:border-white/10 border-stone-200 dark:bg-[#051410]/70 bg-stone-50 hover:bg-stone-100 hover:border-stone-300'

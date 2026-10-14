@@ -202,9 +202,9 @@ export function AdminSection() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-10 animate-in fade-in duration-300">
+    <div className="w-full max-w-7xl mx-auto px-3 py-4 sm:px-6 sm:py-8 lg:px-10 animate-in fade-in duration-300">
       {/* Admin Header Banner */}
-      <div className="rounded-2xl border dark:border-[#d6b875]/40 border-amber-300 dark:bg-gradient-to-r dark:from-[#0c2820] dark:via-[#071b16] dark:to-[#0c2820] bg-white p-6 mb-8 relative overflow-hidden shadow-lg dark:shadow-2xl transition-colors duration-200">
+      <div className="rounded-2xl border dark:border-[#d6b875]/40 border-amber-300 dark:bg-gradient-to-r dark:from-[#0c2820] dark:via-[#071b16] dark:to-[#0c2820] bg-white p-4 sm:p-6 mb-4 sm:mb-8 relative overflow-hidden shadow-lg dark:shadow-2xl transition-colors duration-200">
         <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#d6b875]/15 via-transparent to-transparent pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
